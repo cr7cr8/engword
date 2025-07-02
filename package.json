@@ -10,8 +10,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-navigation/native": "^7.1.14",
     "expo": "~53.0.15",
+    "expo-av": "~15.1.7",
+    "expo-device": "~7.1.4",
+    "expo-file-system": "~18.1.11",
+    "expo-speech": "~13.1.7",
     "expo-status-bar": "~2.2.3",
+    "promise-sequential": "^1.1.1",
     "react": "19.0.0",
     "react-native": "0.79.4"
   },
