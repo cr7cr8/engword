@@ -2,92 +2,31 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
+import { useAudioPlayer } from 'expo-audio';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 
+import { NavigationContainer } from '@react-navigation/native';
+import StackNavigator from './StackNavigator';
 
+import ContextProvider from './ContextProvider';
 
 
 export default function App() {
 
 
-  const [audioSound] = useState(new Audio.Sound())
+ 
+  return (
+    <>
+      <StatusBar style="dark" />
+      <ContextProvider>
+        
+        <AppStarter />
+        
+        
+        </ContextProvider>
 
-  function promiseSpeak(word) {
-
-    return new Promise((resolve, reject) => {
-      FileSystem.readDirectoryAsync(FileSystem.documentDirectory).then(data => {
-      
-        if (data.includes(word + ".mp4")) {
-          console.log(word,"is included")
-          audioSound.unloadAsync()
-            .then(() => {
-  
-              audioSound.loadAsync(
-  
-                //  { uri: `https://audio.wordhippo.com/mp3/translate_tts?ie=UTF-8&tl=en-US&tk=590080.996406&client=t&q=this is a hippo` }
-                { uri: FileSystem.documentDirectory + word + ".mp4" }
-                , { shouldPlay: true }, true)
-                .then(() => {
-  
-  
-                  audioSound.setOnPlaybackStatusUpdate(function (info) {
-                    if (info.didJustFinish) {
-                      resolve()
-                    }
-  
-                    // if ((info.isLoaded) && (!info.isPlaying) && (info.didJustFinish)) {
-  
-                    //     timeout && clearTimeout(timeout); timeout = false
-                    //     resolve()
-                    // }
-                  });
-                })
-            })
-        }
-        else {
-          console.log("downloading",word)
-          const downloadResumable = FileSystem.createDownloadResumable(
-            `https://audio.wordhippo.com/mp3/translate_tts?ie=UTF-8&tl=en-US&tk=590080.996406&client=t&q=${word}`,
-            FileSystem.documentDirectory + word + '.mp4',
-            {},
-            () => {
-              audioSound.unloadAsync()
-                .then(() => {
-                  console.log(word)
-                  audioSound.loadAsync(
-  
-                    //  { uri: `https://audio.wordhippo.com/mp3/translate_tts?ie=UTF-8&tl=en-US&tk=590080.996406&client=t&q=this is a hippo` }
-                    { uri: FileSystem.documentDirectory + word + ".mp4" }
-                    , { shouldPlay: true }, true)
-                })
-  
-            }
-          );
-          downloadResumable.downloadAsync().then(() => { resolve() }).catch(() => { reject() })
-  
-        }
-  
-      })
-  
-    })
-  
-  
-  
-  }
-
-  const speak = () => {
-    const thingToSay = '测试一下  hello how are you';
-    Speech.speak(thingToSay,{onDone:()=>{
-      console.log("speech is done")
-
-      Speech.speak(thingToSay)
-
-    }});
-  };
-
-  
-
+    </>)
 
   return (
     <View style={styles.container}>
@@ -109,6 +48,107 @@ export default function App() {
     </View>
   );
 }
+
+function  AppStarter(){
+  const [audioSound] = useState(new Audio.Sound())
+
+
+  // useAudioPlayer()
+ 
+   function promiseSpeak(word) {
+ 
+     return new Promise((resolve, reject) => {
+       FileSystem.readDirectoryAsync(FileSystem.documentDirectory).then(data => {
+       
+         if (data.includes(word + ".mp4")) {
+           console.log(word,"is included")
+           audioSound.unloadAsync()
+             .then(() => {
+   
+               audioSound.loadAsync(
+   
+                 //  { uri: `https://audio.wordhippo.com/mp3/translate_tts?ie=UTF-8&tl=en-US&tk=590080.996406&client=t&q=this is a hippo` }
+                 { uri: FileSystem.documentDirectory + word + ".mp4" }
+                 , { shouldPlay: true }, true)
+                 .then(() => {
+   
+   
+                   audioSound.setOnPlaybackStatusUpdate(function (info) {
+                     if (info.didJustFinish) {
+                       resolve()
+                     }
+   
+                     // if ((info.isLoaded) && (!info.isPlaying) && (info.didJustFinish)) {
+   
+                     //     timeout && clearTimeout(timeout); timeout = false
+                     //     resolve()
+                     // }
+                   });
+                 })
+             })
+         }
+         else {
+           console.log("downloading",word)
+           const downloadResumable = FileSystem.createDownloadResumable(
+             `https://audio.wordhippo.com/mp3/translate_tts?ie=UTF-8&tl=en-US&tk=590080.996406&client=t&q=${word}`,
+             FileSystem.documentDirectory + word + '.mp4',
+             {},
+             () => {
+               audioSound.unloadAsync()
+                 .then(() => {
+                   console.log(word)
+                   audioSound.loadAsync(
+   
+                     //  { uri: `https://audio.wordhippo.com/mp3/translate_tts?ie=UTF-8&tl=en-US&tk=590080.996406&client=t&q=this is a hippo` }
+                     { uri: FileSystem.documentDirectory + word + ".mp4" }
+                     , { shouldPlay: true }, true)
+                 })
+   
+             }
+           );
+           downloadResumable.downloadAsync().then(() => { resolve() }).catch(() => { reject() })
+   
+         }
+   
+       })
+   
+     })
+   
+   
+   
+   }
+ 
+   const speak = () => {
+     const thingToSay = '测试一下  hello how are you';
+     Speech.speak(thingToSay,{onDone:()=>{
+       console.log("speech is done")
+ 
+       Speech.speak(thingToSay)
+ 
+     }});
+   };
+ 
+   return(
+     <>
+       
+        <NavigationContainer>
+         
+        <ContextProvider></ContextProvider>
+         <StackNavigator />
+         
+         
+         </NavigationContainer>
+ 
+     
+     </>
+  
+   
+   
+   
+   )
+}
+
+
 
 const styles = StyleSheet.create({
   container: {
